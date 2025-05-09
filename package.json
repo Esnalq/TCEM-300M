@@ -1,0 +1,22 @@
+{
+  "name": "tcem-300m",
+  "version": "1.0.0",
+  "description": "Pagina destinada al uso del TCEM 300M",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+
+  "keywords": [],
+  "author": "Agustin Franco Esnal",
+  "license": "",
+  "devDependencies": {
+    "electron": "^28.3.3"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.0"
+  }
+
+}
+
