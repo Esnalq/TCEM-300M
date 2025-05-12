@@ -1,7 +1,57 @@
+const { SerialPort } = require("serialport");
+let port = null;
+let espData = []; // Eje Y
 let i = 0;
-let Yval = Array(6).fill(0);
-const labels = ["ULF", "VLF", "LF", "MF", "HF", "VHF"];
-const ctx = document.getElementById("myChart").getContext("2d");
+
+const labels = ["ULF", "VLF", "LF", "MF", "HF", "VHF"]; // Eje X
+const ctx = document.getElementById("myChart").getContext("2d"); // dejar asi
+
+const ESP = [
+  { vendorId: '1A86', productIds: ['7584', '5584', '5523', '752d', '7523', 'e008', '7522'] }, // CH340
+  { vendorId: '10C4', productIds: ['EA60'] }  // CP2102
+];
+
+const dataSerial = document.getElementById("data");
+const PORTID = document.getElementById("port");
+const connectButton = document.getElementById("connectButton");
+
+function TcemEncontrado(p) {
+  return ESP.some(device =>
+    p.vendorId?.toUpperCase() === device.vendorId &&
+    device.productIds.includes(p.productId?.toUpperCase())
+  );
+}
+
+async function autoConnect() {
+  try {
+    const ports = await SerialPort.list();
+    const matchingPort = ports.find(TcemEncontrado);
+
+    if (!matchingPort) {
+      PORTID.textContent = "TCEM 300M desconectado";
+      return;
+    }
+
+    port = new SerialPort({
+      path: matchingPort.path,
+      baudRate: 115200
+    });
+
+    port.on("open", () => {
+      PORTID.textContent = `TCEM 300M conectado en ${matchingPort.path}`;
+      LecturaData(); 
+    });
+/*
+    port.on("error", err => {
+      console.error("Error:", err.message);
+      PORTID.textContent = ` Error: ${err.message}`;
+    });
+*/
+  } catch (err) {
+    console.error("Error al listar puertos:", err);
+    PORTID.textContent = `Error al buscar puertos: ${err.message}`;
+  }
+}
 
 // Crear gráfico
 const myChart = new Chart(ctx, {
@@ -11,7 +61,7 @@ const myChart = new Chart(ctx, {
     datasets: [{
       label: 'V/M',
       backgroundColor: "rgba(0, 0, 255, 0.6)",
-      data: [...Yval]
+      data: []
     }]
   },
   options: {
@@ -38,44 +88,29 @@ const myChart = new Chart(ctx, {
 // Actualizar gráfico
 window.Start = function () {
   const interval = setInterval(() => {
-    if (i >= Yval.length) {
+    if (i >= espData.length) {
       clearInterval(interval);
       return;
     }
 
-    Yval[i] = i + 1;
-    myChart.data.datasets[0].data = [...Yval];
+    myChart.data.datasets[0].data[i] = espData[i];
     myChart.update();
     i++;
   }, 1000);
 };
 
+// Escuchar los datos del puerto
+function LecturaData() {
+  port.on("readable", function () {
+    const data = port.read().toString().trim();
+    console.log("Data:", data);
+    dataSerial.textContent = data;
 
-async function testIt () {
-  const filters = [
-    // CH340
-    { usbVendorId: 0x1A86, usbProductId: 0x7584 },
-    { usbVendorId: 0x1A86, usbProductId: 0x5584 },
-    { usbVendorId: 0x1A86, usbProductId: 0x5523 },
-    { usbVendorId: 0x1A86, usbProductId: 0x752d },
-    { usbVendorId: 0x1A86, usbProductId: 0x7523 },
-    { usbVendorId: 0x1A86, usbProductId: 0xe008 },
-    { usbVendorId: 0x1A86, usbProductId: 0x7522 },	
-    { usbVendorId: 0x2341, usbProductId: 0x0001 },
-    //CP2102
-    { usbVendorId: 0x10C4, usbProductId: 0xEA60 }
-  ]
-  try {
-    const port = await navigator.serial.requestPort({ filters })
-    const portInfo = port.getInfo()
-    document.getElementById('device-name').innerHTML = `TCEM 300M Encontrado`
-  } catch (ex) {
-    if (ex.name === 'NotFoundError') {
-      document.getElementById('device-name').innerHTML = 'TCEM 300M No Encontrado'
-    } else {
-      document.getElementById('device-name').innerHTML = ex
+    const numericData = parseFloat(data); // Convertir los datos a número directamente
+    if (espData.length < labels.length) {
+      espData.push(numericData); 
     }
-  }
+  });
 }
-document.getElementById('clickme').addEventListener('click', testIt)
 
+connectButton.addEventListener("click", autoConnect);

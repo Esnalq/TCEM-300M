@@ -7,7 +7,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron ."
   },
-
   "keywords": [],
   "author": "Agustin Franco Esnal",
   "license": "",
@@ -15,8 +14,7 @@
     "electron": "^28.3.3"
   },
   "dependencies": {
-    "chart.js": "^4.4.0"
+    "chart.js": "^4.4.0",
+    "serialport": "^13.0.0"
   }
-
 }
-
