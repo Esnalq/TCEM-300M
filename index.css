@@ -1,6 +1,8 @@
 body {
   background-color: white;
   color: black;
+  font-family: 'Montserrat', Arial, sans-serif;
+  transition: background-color 0.5s, color 0.5s;
 }
 
 body.dark-mode {
@@ -14,7 +16,7 @@ body.dark-mode table.table {
 }
 
 body.dark-mode table.table thead.table-dark {
-  background-color: #333;
+  background-color: #333333;
 }
 
 body.dark-mode .btn-success {
@@ -44,4 +46,53 @@ body.dark-mode .badge.bg-success {
 body.dark-mode .badge.bg-danger {
   background-color: #dc3545;
   color: white;
+}
+
+#Modo\ Oscuro {
+  transition: background 0.5s, color 0.5s, border-color 0.5s, transform 0.3s;
+}
+
+#Modo\ Oscuro.tema-oscuro {
+  background: #222 !important;
+  color: #eee !important;
+  border-color: #eee !important;
+}
+
+#Modo\ Oscuro.tema-claro {
+  background: #fff !important;
+  color: #222 !important;
+  border-color: #222 !important;
+}
+
+#myChart {
+  background: rgba(0,0,0,0.02);
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  margin-bottom: 2rem;
+}
+
+#Modo\ Oscuro {
+  border-radius: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  padding: 0.5rem 1.5rem;
+  background: rgba(30,30,30,0.15);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.table {
+  margin-bottom: 2rem;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+
+.btn-success:hover, .btn-outline-secondary:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
 }
